@@ -2,6 +2,19 @@
 
 This document contains critical rules and guidelines for AI agents working on this codebase.
 
+## Project Overview
+
+This is an **Image Analysis Widget** - a Next.js application that allows users to upload images and extract AI-generated metadata using various AI providers (Vercel AI Gateway, Ollama, or custom OpenAI-compatible endpoints).
+
+### Key Features
+
+- Image upload with drag-and-drop support
+- AI-powered metadata extraction (title, tags, descriptions, colors, mood, style, subject, dimensions)
+- Multiple AI provider support (Vercel AI Gateway, Ollama, custom endpoints)
+- Image storage via Vercel Blob
+- Search indexing via Upstash Search
+- Export results to JSON/CSV
+
 ## Security Rules
 
 ### CRITICAL: No Dynamic Values in Logs
@@ -36,38 +49,38 @@ console.error("Error occurred:", error);
 
 #### Sensitive Data That Must NEVER Appear in Logs:
 
-- Vercel credentials (SANDBOX_VERCEL_TOKEN, SANDBOX_VERCEL_TEAM_ID, SANDBOX_VERCEL_PROJECT_ID)
-- User IDs and personal information
-- File paths and repository URLs
-- Branch names and commit messages
+- Upstash credentials (UPSTASH_SEARCH_REST_URL, UPSTASH_SEARCH_REST_TOKEN)
+- Vercel Blob credentials (BLOB_READ_WRITE_TOKEN)
+- User-provided API keys for AI providers
+- Image filenames and blob URLs
+- Analysis results containing user content
 - Error details that may contain sensitive context
 - Any dynamic values that could reveal system internals
 
 ### Credential Redaction
 
-The `redactSensitiveInfo()` function in `lib/utils/logging.ts` automatically redacts known sensitive patterns, but this is a **backup measure only**. The primary defense is to never log dynamic values in the first place.
+If a `redactSensitiveInfo()` function exists, it automatically redacts known sensitive patterns, but this is a **backup measure only**. The primary defense is to never log dynamic values in the first place.
 
 #### Current Redaction Patterns:
 
 - API keys (ANTHROPIC_API_KEY, OPENAI_API_KEY, etc.)
-- GitHub tokens (ghp*, gho*, ghu*, ghs*, ghr\_)
-- Vercel credentials (SANDBOX_VERCEL_TOKEN, SANDBOX_VERCEL_TEAM_ID, SANDBOX_VERCEL_PROJECT_ID)
+- Upstash credentials (UPSTASH_SEARCH_REST_URL, UPSTASH_SEARCH_REST_TOKEN)
+- Vercel Blob token (BLOB_READ_WRITE_TOKEN)
 - Bearer tokens
-- JSON fields (teamId, projectId)
-- Environment variables containing KEY, TOKEN, SECRET, PASSWORD, TEAM_ID, PROJECT_ID
+- Environment variables containing KEY, TOKEN, SECRET, PASSWORD, URL
 
 ## Code Quality Guidelines
 
 ### Code Formatting and Quality Checks
 
-**Always run `pnpm format`, `pnpm type-check`, and `pnpm lint` after making changes to TypeScript/TSX files.**
+**Always run `pnpm format`, `pnpm lint`, and `pnpm build` after making changes to TypeScript/TSX files.**
 
 The project uses Prettier for code formatting, TypeScript for type checking, and ESLint for linting. After editing any `.ts` or `.tsx` files, run:
 
 ```bash
 pnpm format
-pnpm type-check
 pnpm lint
+pnpm build
 ```
 
 **If any errors are found:**
@@ -116,10 +129,8 @@ nodemon
 #### What to Do Instead:
 
 1. **Testing changes**: Use `pnpm build` to verify the production build works
-2. **Type checking**: Use `pnpm type-check` to verify types
-3. **Linting**: Use `pnpm lint` to check code quality
-4. **Running tests**: Use `pnpm test` if tests are available
-5. **If the user needs to test**: Let the user run the dev server themselves
+2. **Linting**: Use `pnpm lint` to check code quality
+3. **If the user needs to test**: Let the user run the dev server themselves
 
 #### Exception:
 
@@ -131,9 +142,9 @@ If the user explicitly asks you to start a dev server, politely explain why you 
 
    ```typescript
    // Instead of logging the value, log the action
-   await logger.info("Sandbox created successfully");
-   await logger.info("Dependencies installed");
-   await logger.error("Build failed");
+   console.log("Image uploaded successfully");
+   console.log("Analysis started");
+   console.error("Analysis failed");
    ```
 
 2. **Server-side logging for debugging**
@@ -141,14 +152,7 @@ If the user explicitly asks you to start a dev server, politely explain why you 
    ```typescript
    // Use console.error for server-side debugging (not shown to users)
    // But still avoid sensitive data
-   console.error("Sandbox creation error:", error);
-   ```
-
-3. **Progress updates**
-   ```typescript
-   // Use static progress messages
-   await logger.updateProgress(50, "Installing dependencies");
-   await logger.updateProgress(75, "Running build");
+   console.error("Blob upload error:", error);
    ```
 
 ### Error Handling
@@ -156,8 +160,8 @@ If the user explicitly asks you to start a dev server, politely explain why you 
 1. **Generic error messages to users**
 
    ```typescript
-   await logger.error("Operation failed");
-   // NOT: await logger.error(`Operation failed: ${error.message}`)
+   return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
+   // NOT: return NextResponse.json({ error: `Analysis failed: ${error.message}` }, { status: 500 });
    ```
 
 2. **Detailed server-side logging**
@@ -166,118 +170,178 @@ If the user explicitly asks you to start a dev server, politely explain why you 
    // This appears in server logs, not user-facing logs
    ```
 
-## Testing Changes
-
-When making changes that involve logging:
-
-1. **Search for dynamic values**
-
-   ```bash
-   # Check for logger statements with template literals
-   grep -r "logger\.(info|error|success|command)\(\`.*\$\{" .
-
-   # Check for console statements with template literals
-   grep -r "console\.(log|error|warn|info)\(\`.*\$\{" .
-   ```
-
-2. **Verify no sensitive data exposure**
-   - Test the feature in the UI
-   - Check the logs displayed to users
-   - Ensure no sensitive information is visible
-
 ## Configuration Security
 
 ### Environment Variables
 
 Never expose these in logs or to the client:
 
-- `SANDBOX_VERCEL_TOKEN` - Vercel API token
-- `SANDBOX_VERCEL_TEAM_ID` - Vercel team identifier
-- `SANDBOX_VERCEL_PROJECT_ID` - Vercel project identifier
-- `ANTHROPIC_API_KEY` - Anthropic/Claude API key
-- `OPENAI_API_KEY` - OpenAI API key
-- `GEMINI_API_KEY` - Google Gemini API key
-- `CURSOR_API_KEY` - Cursor API key
-- `GH_TOKEN` / `GITHUB_TOKEN` - GitHub personal access token
-- `JWE_SECRET` - Encryption secret
-- `ENCRYPTION_KEY` - Encryption key
-- Any user-provided API keys
+- `UPSTASH_SEARCH_REST_URL` - Upstash Search REST URL
+- `UPSTASH_SEARCH_REST_TOKEN` - Upstash Search REST token
+- `BLOB_READ_WRITE_TOKEN` - Vercel Blob read/write token (auto-configured on Vercel)
+- User-provided API keys passed in request body (for custom AI providers)
 
 ### Client-Safe Variables
 
-Only these variables should be exposed to the client (via `NEXT_PUBLIC_` prefix):
-
-- `NEXT_PUBLIC_AUTH_PROVIDERS` - Available auth providers
-- `NEXT_PUBLIC_GITHUB_CLIENT_ID` - GitHub OAuth client ID (public)
+Currently, no `NEXT_PUBLIC_` variables are used in this project. All configuration is handled server-side or passed dynamically by users.
 
 ## Architecture Guidelines
 
-### Repository Page Structure
+### Application Structure
 
-The repository page uses a nested routing structure with separate pages for each tab:
-
-#### Route Structure
+This is a single-page application with the following structure:
 
 ```
-app/repos/[owner]/[repo]/
-├── layout.tsx           # Shared layout with navigation tabs
-├── page.tsx            # Redirects to /commits by default
-├── commits/
-│   └── page.tsx        # Commits page
-├── issues/
-│   └── page.tsx        # Issues page
-└── pull-requests/
-    └── page.tsx        # Pull Requests page
+app/
+├── layout.tsx           # Root layout with theme provider
+├── page.tsx             # Main page with all functionality
+├── globals.css          # Global styles
+└── api/
+    ├── analyze/
+    │   └── route.ts     # POST - Analyze image with AI
+    ├── upload-blob/
+    │   └── route.ts     # POST - Upload image to Vercel Blob
+    └── index-search/
+        └── route.ts     # POST - Index metadata to Upstash Search
+
+components/
+├── upload-zone.tsx      # Image upload with drag-and-drop
+├── settings-panel.tsx   # AI provider configuration
+├── result-card.tsx      # Display analysis results
+├── export-bar.tsx       # Export results to JSON/CSV
+├── processing-progress.tsx  # Processing progress indicator
+├── theme-provider.tsx   # Dark/light theme provider
+└── ui/                  # shadcn/ui components
+
+lib/
+├── types.ts             # TypeScript types and constants
+├── schema.ts            # Zod schema for image analysis
+├── image-utils.ts       # Image utility functions
+├── export.ts            # Export utilities
+└── utils.ts             # General utilities
 ```
 
-#### Components
+### API Routes
 
-- `components/repo-layout.tsx` - Shared layout component with tab navigation
-- `components/repo-commits.tsx` - Commits list component
-- `components/repo-issues.tsx` - Issues list component
-- `components/repo-pull-requests.tsx` - Pull requests list component
+#### `/api/analyze` (POST)
 
-#### API Routes
+Analyzes an image using AI and returns structured metadata.
 
+**Request body:**
+
+```typescript
+{
+  imageBase64: string      // Base64-encoded image
+  mediaType: string        // MIME type (e.g., "image/jpeg")
+  providerType: "gateway" | "ollama" | "custom"
+  model: string            // Model identifier (e.g., "openai/gpt-4o")
+  apiKey?: string          // API key for custom providers
+  baseUrl?: string         // Base URL for Ollama/custom providers
+  systemMessage: string    // Custom system prompt
+  tone: ToneOption         // Output tone
+  enabledOutputs: OutputField[]  // Which fields to generate
+}
 ```
-app/api/repos/[owner]/[repo]/
-├── commits/route.ts         # GET - Fetch commits
-├── issues/route.ts          # GET - Fetch issues
-└── pull-requests/route.ts   # GET - Fetch pull requests
+
+**Response:**
+
+```typescript
+{
+  result: {
+    title: string
+    tags: string[]
+    shortDescription: string
+    longDescription: string
+    generatedPrompt: string
+    colors: string[]
+    mood: string
+    style: string
+    subject: string
+    dimensions: string
+  }
+}
 ```
 
-#### Key Features
+#### `/api/upload-blob` (POST)
 
-1. **Tab Navigation**: Uses Next.js Link components for client-side navigation between tabs
-2. **Separate Pages**: Each tab renders on its own route (commits, issues, pull-requests)
-3. **Default Route**: Visiting `/repos/[owner]/[repo]` redirects to `/repos/[owner]/[repo]/commits`
-4. **Active State**: The active tab is determined by matching the current pathname
-5. **GitHub Integration**: All data is fetched from GitHub API using Octokit client
+Uploads an image to Vercel Blob storage.
 
-#### Adding New Tabs
+**Request:** FormData with `file` and optional `title`
 
-To add a new tab to the repository page:
+**Response:**
 
-1. Create a new directory under `app/repos/[owner]/[repo]/[tab-name]/`
-2. Add a `page.tsx` file that renders your component
-3. Create the component in `components/repo-[tab-name].tsx`
-4. Add an API route in `app/api/repos/[owner]/[repo]/[tab-name]/route.ts`
-5. Update the `tabs` array in `components/repo-layout.tsx` to include the new tab
-6. Follow the existing patterns for data fetching and error handling
+```typescript
+{
+  url: string; // Public blob URL
+  pathname: string; // Blob pathname
+}
+```
+
+#### `/api/index-search` (POST)
+
+Indexes image metadata to Upstash Search.
+
+**Request body:**
+
+```typescript
+{
+  id: string
+  imageUrl: string
+  filename: string
+  title: string
+  tags: string[]
+  shortDescription: string
+  colors: string[]
+  mood: string
+  style: string
+  subject: string
+  dimensions: string
+}
+```
+
+**Response:**
+
+```typescript
+{
+  success: boolean;
+  id: string;
+}
+```
+
+### AI Provider Configuration
+
+The application supports three provider types:
+
+1. **gateway** - Vercel AI Gateway (default)
+   - Models: `openai/gpt-4o`, `openai/gpt-4o-mini`, `anthropic/claude-sonnet-4`, `google/gemini-2.5-flash-preview-04-17`
+   - No additional configuration needed
+
+2. **ollama** - Local Ollama instance
+   - Default base URL: `http://localhost:11434/v1`
+   - Uses OpenAI-compatible API
+
+3. **custom** - Any OpenAI-compatible endpoint
+   - Requires `baseUrl` and optionally `apiKey`
+
+### Key Types
+
+See `lib/types.ts` for complete type definitions:
+
+- `ImageFile` - Image with upload state and results
+- `ImageAnalysisResult` - AI-generated metadata
+- `ProviderConfig` - AI provider configuration
+- `OutputField` - Available metadata fields
+- `ToneOption` - Output tone options
 
 ## Compliance Checklist
 
 Before submitting changes, verify:
 
 - [ ] No template literals with `${}` in any log statements
-- [ ] All logger calls use static strings
 - [ ] All console calls use static strings (for user-facing logs)
 - [ ] No sensitive data in error messages
-- [ ] Tested in UI to confirm no data leakage
 - [ ] Server-side debugging logs don't expose credentials
 - [ ] Ran `pnpm format` and code is properly formatted
-- [ ] Ran `pnpm format:check` to verify formatting
-- [ ] Ran `pnpm type-check` and all type errors are fixed
 - [ ] Ran `pnpm lint` and all linting errors are fixed
 - [ ] Ran `pnpm build` to verify production build succeeds
 

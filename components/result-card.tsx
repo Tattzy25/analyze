@@ -1,29 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Copy, Check, ChevronDown, ChevronUp, ExternalLink, Cloud, Search } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import type { ImageFile, OutputField } from "@/lib/types"
-import { OUTPUT_FIELD_LABELS } from "@/lib/types"
-import { copyToClipboard } from "@/lib/image-utils"
+import { useState } from "react";
+import {
+  Copy,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Cloud,
+  Search,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import type { ImageFile, OutputField } from "@/lib/types";
+import { OUTPUT_FIELD_LABELS } from "@/lib/types";
+import { copyToClipboard } from "@/lib/image-utils";
 
 interface ResultCardProps {
-  image: ImageFile
-  enabledOutputs: OutputField[]
+  image: ImageFile;
+  enabledOutputs: OutputField[];
 }
 
 function CopyButton({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    const success = await copyToClipboard(text)
+    const success = await copyToClipboard(text);
     if (success) {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
+  };
 
   return (
     <Button
@@ -39,64 +47,80 @@ function CopyButton({ text, label }: { text: string; label: string }) {
         <Copy className="h-3 w-3 text-muted-foreground" />
       )}
     </Button>
-  )
+  );
 }
 
-function FieldRow({ label, value, fieldKey }: { label: string; value: string | string[]; fieldKey: string }) {
-  const displayValue = Array.isArray(value) ? value.join(", ") : value
-  if (!displayValue) return null
+function FieldRow({
+  label,
+  value,
+  fieldKey,
+}: {
+  label: string;
+  value: string | string[];
+  fieldKey: string;
+}) {
+  const displayValue = Array.isArray(value) ? value.join(", ") : value;
+  if (!displayValue) return null;
 
   if (fieldKey === "tags" || fieldKey === "colors") {
-    const items = Array.isArray(value) ? value : [value]
+    const items = Array.isArray(value) ? value : [value];
     return (
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-muted-foreground">{label}</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {label}
+          </span>
           <CopyButton text={items.join(", ")} label={label} />
         </div>
         <div className="flex flex-wrap gap-1.5">
           {items.map((item, i) => (
-            <Badge key={`${fieldKey}-${i}`} variant="secondary" className="text-[11px]">
+            <Badge
+              key={`${fieldKey}-${i}`}
+              variant="secondary"
+              className="text-[11px]"
+            >
               {item}
             </Badge>
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <span className="text-xs font-medium text-muted-foreground">
+          {label}
+        </span>
         <CopyButton text={displayValue} label={label} />
       </div>
       <p className="text-sm text-foreground leading-relaxed">{displayValue}</p>
     </div>
-  )
+  );
 }
 
 export function ResultCard({ image, enabledOutputs }: ResultCardProps) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(true);
 
-  if (!image.result) return null
+  if (!image.result) return null;
 
   const handleCopyAll = async () => {
-    const parts: string[] = [image.file.name]
+    const parts: string[] = [image.file.name];
     if (image.blobUrl) {
-      parts.push(`Image URL: ${image.blobUrl}`)
+      parts.push(`Image URL: ${image.blobUrl}`);
     }
     const fieldTexts = enabledOutputs
       .map((field) => {
-        const val = image.result?.[field]
-        const display = Array.isArray(val) ? val.join(", ") : val
-        return `${OUTPUT_FIELD_LABELS[field]}: ${display}`
+        const val = image.result?.[field];
+        const display = Array.isArray(val) ? val.join(", ") : val;
+        return `${OUTPUT_FIELD_LABELS[field]}: ${display}`;
       })
-      .join("\n\n")
-    parts.push(fieldTexts)
+      .join("\n\n");
+    parts.push(fieldTexts);
 
-    await copyToClipboard(parts.join("\n\n"))
-  }
+    await copyToClipboard(parts.join("\n\n"));
+  };
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
@@ -113,28 +137,40 @@ export function ResultCard({ image, enabledOutputs }: ResultCardProps) {
           <h3 className="text-sm font-semibold text-foreground truncate text-balance">
             {image.result.title || image.file.name}
           </h3>
-          {enabledOutputs.includes("shortDescription") && image.result.shortDescription && (
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-              {image.result.shortDescription}
-            </p>
-          )}
+          {enabledOutputs.includes("shortDescription") &&
+            image.result.shortDescription && (
+              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                {image.result.shortDescription}
+              </p>
+            )}
           {/* Status indicators */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {image.blobUrl && (
-              <Badge variant="secondary" className="text-[10px] gap-1 font-normal">
+              <Badge
+                variant="secondary"
+                className="text-[10px] gap-1 font-normal"
+              >
                 <Cloud className="h-3 w-3 text-primary" />
                 Blob
               </Badge>
             )}
             {image.searchIndexId && (
-              <Badge variant="secondary" className="text-[10px] gap-1 font-normal">
+              <Badge
+                variant="secondary"
+                className="text-[10px] gap-1 font-normal"
+              >
                 <Search className="h-3 w-3 text-primary" />
                 Indexed
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-2 mt-1">
-            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={handleCopyAll}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 text-[10px] px-2"
+              onClick={handleCopyAll}
+            >
               <Copy className="h-3 w-3 mr-1" />
               Copy All
             </Button>
@@ -167,7 +203,9 @@ export function ResultCard({ image, enabledOutputs }: ResultCardProps) {
             <>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Image URL</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Image URL
+                  </span>
                   <CopyButton text={image.blobUrl} label="Image URL" />
                 </div>
                 <a
@@ -184,8 +222,9 @@ export function ResultCard({ image, enabledOutputs }: ResultCardProps) {
             </>
           )}
           {enabledOutputs.map((field, i) => {
-            const value = image.result?.[field]
-            if (!value || (Array.isArray(value) && value.length === 0)) return null
+            const value = image.result?.[field];
+            if (!value || (Array.isArray(value) && value.length === 0))
+              return null;
             return (
               <div key={field}>
                 {i > 0 && <Separator className="mb-3" />}
@@ -195,10 +234,10 @@ export function ResultCard({ image, enabledOutputs }: ResultCardProps) {
                   fieldKey={field}
                 />
               </div>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
+  );
 }

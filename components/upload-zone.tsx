@@ -1,52 +1,61 @@
-"use client"
+"use client";
 
-import { useCallback, useRef } from "react"
-import { Upload, X, ImageIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import type { ImageFile } from "@/lib/types"
-import { formatFileSize } from "@/lib/image-utils"
+import { useCallback, useRef } from "react";
+import { Upload, X, ImageIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { ImageFile } from "@/lib/types";
+import { formatFileSize } from "@/lib/image-utils";
 
 interface UploadZoneProps {
-  images: ImageFile[]
-  onAddImages: (files: File[]) => void
-  onRemoveImage: (id: string) => void
-  disabled?: boolean
+  images: ImageFile[];
+  onAddImages: (files: File[]) => void;
+  onRemoveImage: (id: string) => void;
+  disabled?: boolean;
 }
 
-export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: UploadZoneProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+export function UploadZone({
+  images,
+  onAddImages,
+  onRemoveImage,
+  disabled,
+}: UploadZoneProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      if (disabled) return
-      const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"))
-      if (files.length > 0) onAddImages(files)
+      e.preventDefault();
+      if (disabled) return;
+      const files = Array.from(e.dataTransfer.files).filter((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (files.length > 0) onAddImages(files);
     },
-    [onAddImages, disabled]
-  )
+    [onAddImages, disabled],
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-  }, [])
+    e.preventDefault();
+  }, []);
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith("image/"))
-      if (files.length > 0) onAddImages(files)
-      if (inputRef.current) inputRef.current.value = ""
+      const files = Array.from(e.target.files || []).filter((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (files.length > 0) onAddImages(files);
+      if (inputRef.current) inputRef.current.value = "";
     },
-    [onAddImages]
-  )
+    [onAddImages],
+  );
 
   const statusColor: Record<string, string> = {
     pending: "bg-muted-foreground/20 text-muted-foreground",
     processing: "bg-chart-1/20 text-chart-1",
     complete: "bg-green-500/20 text-green-600",
     error: "bg-destructive/20 text-destructive",
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,15 +67,15 @@ export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: Upl
           "flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 transition-colors cursor-pointer",
           disabled
             ? "border-border/50 bg-muted/30 cursor-not-allowed opacity-60"
-            : "border-border hover:border-primary/50 hover:bg-accent/30"
+            : "border-border hover:border-primary/50 hover:bg-accent/30",
         )}
         role="button"
         tabIndex={0}
         aria-label="Upload images by clicking or dragging files here"
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault()
-            if (!disabled) inputRef.current?.click()
+            e.preventDefault();
+            if (!disabled) inputRef.current?.click();
           }
         }}
       >
@@ -74,7 +83,9 @@ export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: Upl
           <Upload className="h-6 w-6 text-muted-foreground" />
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-foreground">Drop images here or click to browse</p>
+          <p className="text-sm font-medium text-foreground">
+            Drop images here or click to browse
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
             Supports JPG, PNG, WebP, GIF. Multiple files allowed.
           </p>
@@ -134,7 +145,10 @@ export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: Upl
                     </span>
                     <Badge
                       variant="secondary"
-                      className={cn("text-[9px] px-1.5 py-0 h-4 capitalize", statusColor[img.status])}
+                      className={cn(
+                        "text-[9px] px-1.5 py-0 h-4 capitalize",
+                        statusColor[img.status],
+                      )}
                     >
                       {img.status}
                     </Badge>
@@ -146,8 +160,8 @@ export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: Upl
                     size="icon"
                     className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive/90 text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      onRemoveImage(img.id)
+                      e.stopPropagation();
+                      onRemoveImage(img.id);
                     }}
                     aria-label={`Remove ${img.file.name}`}
                   >
@@ -160,5 +174,5 @@ export function UploadZone({ images, onAddImages, onRemoveImage, disabled }: Upl
         </div>
       )}
     </div>
-  )
+  );
 }

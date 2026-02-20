@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -15,7 +15,7 @@
   --secondary: oklch(0.22 0.008 260);
   --secondary-foreground: oklch(0.88 0 0);
   --muted: oklch(0.22 0.008 260);
-  --muted-foreground: oklch(0.60 0 0);
+  --muted-foreground: oklch(0.6 0 0);
   --accent: oklch(0.22 0.008 260);
   --accent-foreground: oklch(0.88 0 0);
   --destructive: oklch(0.55 0.22 27);
@@ -25,9 +25,9 @@
   --ring: oklch(0.72 0.14 185);
   --chart-1: oklch(0.72 0.14 185);
   --chart-2: oklch(0.65 0.12 200);
-  --chart-3: oklch(0.58 0.10 220);
-  --chart-4: oklch(0.78 0.10 170);
-  --chart-5: oklch(0.50 0.08 240);
+  --chart-3: oklch(0.58 0.1 220);
+  --chart-4: oklch(0.78 0.1 170);
+  --chart-5: oklch(0.5 0.08 240);
   --radius: 0.5rem;
   --sidebar: oklch(0.15 0.005 260);
   --sidebar-foreground: oklch(0.95 0 0);
@@ -51,7 +51,7 @@
   --secondary: oklch(0.22 0.008 260);
   --secondary-foreground: oklch(0.88 0 0);
   --muted: oklch(0.22 0.008 260);
-  --muted-foreground: oklch(0.60 0 0);
+  --muted-foreground: oklch(0.6 0 0);
   --accent: oklch(0.22 0.008 260);
   --accent-foreground: oklch(0.88 0 0);
   --destructive: oklch(0.55 0.22 27);
@@ -61,9 +61,9 @@
   --ring: oklch(0.72 0.14 185);
   --chart-1: oklch(0.72 0.14 185);
   --chart-2: oklch(0.65 0.12 200);
-  --chart-3: oklch(0.58 0.10 220);
-  --chart-4: oklch(0.78 0.10 170);
-  --chart-5: oklch(0.50 0.08 240);
+  --chart-3: oklch(0.58 0.1 220);
+  --chart-4: oklch(0.78 0.1 170);
+  --chart-5: oklch(0.5 0.08 240);
   --sidebar: oklch(0.15 0.005 260);
   --sidebar-foreground: oklch(0.95 0 0);
   --sidebar-primary: oklch(0.72 0.14 185);
@@ -75,8 +75,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
