@@ -24,6 +24,7 @@ import type {
 import {
   TONE_DESCRIPTIONS,
   OUTPUT_FIELD_LABELS,
+  OUTPUT_FIELD_DESCRIPTIONS,
   GATEWAY_MODELS,
 } from "@/lib/types";
 
@@ -45,6 +46,7 @@ const TONE_OPTIONS: ToneOption[] = [
   "creative",
   "technical",
   "marketing",
+  "custom",
 ];
 
 export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
@@ -98,13 +100,8 @@ export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
               onValueChange={(v) =>
                 update({
                   type: v as ProviderType,
-                  model:
-                    v === "gateway"
-                      ? "openai/gpt-4o"
-                      : v === "ollama"
-                        ? "llava"
-                        : "",
-                  baseUrl: v === "ollama" ? "http://localhost:11434/v1" : "",
+                  model: v === "gateway" ? "openai/gpt-4o" : "",
+                  baseUrl: "",
                 })
               }
             >
@@ -121,27 +118,45 @@ export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
             </Select>
           </div>
 
-          {/* Model */}
+          {/* Model Selection */}
           <div className="flex flex-col gap-2">
             <Label className="text-xs font-medium text-muted-foreground">
               Model
             </Label>
             {config.type === "gateway" ? (
-              <Select
-                value={config.model}
-                onValueChange={(v) => update({ model: v })}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {GATEWAY_MODELS.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>
-                      {m.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <Select
+                  value={config.model}
+                  onValueChange={(v) => update({ model: v })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GATEWAY_MODELS.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>
+                        {m.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {config.model === "custom" && (
+                  <>
+                    <Input
+                      value={config.customModel || ""}
+                      onChange={(e) => update({ customModel: e.target.value })}
+                      placeholder="Model ID (e.g., openai/gpt-4.1)"
+                      className="text-sm w-full"
+                    />
+                    <Input
+                      value={config.provider || ""}
+                      onChange={(e) => update({ provider: e.target.value })}
+                      placeholder="Provider (optional)"
+                      className="text-sm w-full"
+                    />
+                  </>
+                )}
+              </div>
             ) : (
               <Input
                 value={config.model}
@@ -207,25 +222,35 @@ export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
             <Label className="text-xs font-medium text-muted-foreground">
               Description Tone
             </Label>
-            <Select
-              value={config.tone}
-              onValueChange={(v) => update({ tone: v as ToneOption })}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TONE_OPTIONS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    <span className="capitalize">{t}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      {"- "}
-                      {TONE_DESCRIPTIONS[t]}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <Select
+                value={config.tone}
+                onValueChange={(v) => update({ tone: v as ToneOption })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TONE_OPTIONS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      <span className="capitalize">{t}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {"- "}
+                        {TONE_DESCRIPTIONS[t]}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {config.tone === "custom" && (
+                <Input
+                  value={config.customTone || ""}
+                  onChange={(e) => update({ customTone: e.target.value })}
+                  placeholder="Enter custom tone description..."
+                  className="text-sm w-full"
+                />
+              )}
+            </div>
           </div>
 
           <Separator />
@@ -257,20 +282,34 @@ export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+            <div className="flex flex-col gap-3">
               {allOutputFields.map((field) => (
-                <label
-                  key={field}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <Switch
-                    checked={config.enabledOutputs.includes(field)}
-                    onCheckedChange={() => toggleOutput(field)}
+                <div key={field} className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer min-w-[140px]">
+                    <Switch
+                      checked={config.enabledOutputs.includes(field)}
+                      onCheckedChange={() => toggleOutput(field)}
+                    />
+                    <span className="text-xs text-foreground">
+                      {OUTPUT_FIELD_LABELS[field]}
+                    </span>
+                  </label>
+                  <Input
+                    value={
+                      config.outputDescriptions?.[field] ??
+                      OUTPUT_FIELD_DESCRIPTIONS[field]
+                    }
+                    onChange={(e) =>
+                      update({
+                        outputDescriptions: {
+                          ...config.outputDescriptions,
+                          [field]: e.target.value,
+                        },
+                      })
+                    }
+                    className="text-xs h-7 flex-1"
                   />
-                  <span className="text-xs text-foreground">
-                    {OUTPUT_FIELD_LABELS[field]}
-                  </span>
-                </label>
+                </div>
               ))}
             </div>
           </div>

@@ -2,6 +2,7 @@ import { generateText, Output } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { imageAnalysisSchema } from "@/lib/schema";
 import type { OutputField, ToneOption } from "@/lib/types";
+import { OUTPUT_FIELD_DESCRIPTIONS } from "@/lib/types";
 
 export const maxDuration = 60;
 
@@ -12,6 +13,7 @@ const TONE_PROMPTS: Record<ToneOption, string> = {
   creative: "Use an imaginative, expressive tone.",
   technical: "Use a detailed, precise, and technical tone.",
   marketing: "Use a persuasive, engaging, marketing-focused tone.",
+  custom: "", // Placeholder - uses customTone value
 };
 
 export async function POST(req: Request) {
@@ -21,44 +23,74 @@ export async function POST(req: Request) {
     mediaType,
     providerType,
     model,
+    customModel,
+    provider,
     apiKey,
     baseUrl,
     systemMessage,
     tone,
+    customTone,
     enabledOutputs,
+    outputDescriptions,
   } = body as {
     imageBase64: string;
     mediaType: string;
     providerType: "gateway" | "ollama" | "custom";
     model: string;
+    customModel?: string;
+    provider?: string;
     apiKey?: string;
     baseUrl?: string;
     systemMessage: string;
     tone: ToneOption;
+    customTone?: string;
     enabledOutputs: OutputField[];
+    outputDescriptions?: Partial<Record<OutputField, string>>;
   };
 
-  const outputFieldsStr = enabledOutputs.join(", ");
+  // Use customModel if provided, otherwise use model
+  const effectiveModel = customModel || model;
+
+  // Build field descriptions with custom overrides
+  const fieldDescriptions = enabledOutputs
+    .map((field) => {
+      const description =
+        outputDescriptions?.[field] ?? OUTPUT_FIELD_DESCRIPTIONS[field];
+      return `- ${field}: ${description}`;
+    })
+    .join("\n");
+
+  // Get tone prompt - use customTone if tone is "custom"
+  const tonePrompt =
+    tone === "custom"
+      ? customTone || "Use an appropriate tone for the content."
+      : TONE_PROMPTS[tone];
 
   const fullSystemMessage = [
     systemMessage,
-    TONE_PROMPTS[tone],
-    `Only generate the following fields: ${outputFieldsStr}. Leave unused fields as empty strings or empty arrays.`,
+    tonePrompt,
+    `Generate the following fields:\n${fieldDescriptions}`,
+    "Leave unused fields as empty strings or empty arrays.",
   ].join("\n\n");
 
   try {
     let modelRef: Parameters<typeof generateText>[0]["model"];
 
     if (providerType === "gateway") {
-      // Vercel AI Gateway - just pass model string
-      modelRef = model as Parameters<typeof generateText>[0]["model"];
+      // Vercel AI Gateway - use effectiveModel (customModel if provided, otherwise model)
+      modelRef = effectiveModel as Parameters<typeof generateText>[0]["model"];
     } else if (providerType === "ollama") {
+      if (!baseUrl) {
+        return Response.json(
+          { error: "Base URL is required for Ollama" },
+          { status: 400 },
+        );
+      }
       const ollamaProvider = createOpenAICompatible({
         name: "ollama",
-        baseURL: baseUrl || "http://localhost:11434/v1",
+        baseURL: baseUrl,
       });
-      const modelName = model.startsWith("ollama/") ? model.slice(7) : model;
-      modelRef = ollamaProvider(modelName);
+      modelRef = ollamaProvider(effectiveModel);
     } else {
       // Custom OpenAI-compatible provider
       if (!baseUrl) {
@@ -72,7 +104,7 @@ export async function POST(req: Request) {
         baseURL: baseUrl,
         apiKey: apiKey || undefined,
       });
-      modelRef = customProvider(model);
+      modelRef = customProvider(effectiveModel);
     }
 
     const { output } = await generateText({

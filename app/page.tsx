@@ -84,11 +84,15 @@ export default function Page() {
             mediaType,
             providerType: config.type,
             model: config.model,
+            customModel: config.customModel,
+            provider: config.provider,
             apiKey: config.apiKey,
             baseUrl: config.baseUrl,
             systemMessage: config.systemMessage,
             tone: config.tone,
+            customTone: config.customTone,
             enabledOutputs: config.enabledOutputs,
+            outputDescriptions: config.outputDescriptions,
           }),
         });
 

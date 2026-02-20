@@ -14,6 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://analyzer-alpha.vercel.app"),
   title: {
     default: "Image Analyzer - AI-Powered Image Metadata Extraction",
     template: "%s | Image Analyzer",

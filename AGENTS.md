@@ -73,14 +73,14 @@ If a `redactSensitiveInfo()` function exists, it automatically redacts known sen
 
 ### Code Formatting and Quality Checks
 
-**Always run `pnpm format`, `pnpm lint`, and `pnpm build` after making changes to TypeScript/TSX files.**
+**Always run `pnpm format`, `pnpm type-check`, and `pnpm lint` after making changes to TypeScript/TSX files.**
 
 The project uses Prettier for code formatting, TypeScript for type checking, and ESLint for linting. After editing any `.ts` or `.tsx` files, run:
 
 ```bash
 pnpm format
+pnpm type-check
 pnpm lint
-pnpm build
 ```
 
 **If any errors are found:**
@@ -90,6 +90,22 @@ pnpm build
 3. **Do not skip or ignore errors** - all errors must be resolved before considering the task complete
 
 This ensures all code follows the project's formatting standards, type safety requirements, and linting rules, preventing issues in pull requests.
+
+### Git Hooks (Husky)
+
+This project uses Husky for git hooks. The pre-commit hook automatically runs:
+
+```bash
+pnpm lint && pnpm type-check && pnpm format:check
+```
+
+**Before every commit**, the following checks are performed:
+
+- **ESLint** - Code quality checks
+- **TypeScript** - Type safety verification
+- **Prettier** - Format validation
+
+If any check fails, the commit will be blocked. Fix the issues and try again.
 
 ### Use shadcn CLI for UI Components
 
@@ -342,6 +358,7 @@ Before submitting changes, verify:
 - [ ] No sensitive data in error messages
 - [ ] Server-side debugging logs don't expose credentials
 - [ ] Ran `pnpm format` and code is properly formatted
+- [ ] Ran `pnpm type-check` and all type errors are fixed
 - [ ] Ran `pnpm lint` and all linting errors are fixed
 - [ ] Ran `pnpm build` to verify production build succeeds
 

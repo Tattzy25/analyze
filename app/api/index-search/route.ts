@@ -2,6 +2,7 @@ import { Search } from "@upstash/search";
 import { type NextRequest, NextResponse } from "next/server";
 
 type SearchContent = {
+  "Image URL": string;
   Title: string;
   Tags: string;
   "Short Description": string;
@@ -13,7 +14,7 @@ type SearchContent = {
 };
 
 type SearchMetadata = {
-  imageUrl: string;
+  sku: string;
   filename: string;
   indexedAt: string;
 };
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
     const {
       id,
       imageUrl,
+      sku,
       filename,
       title,
       tags,
@@ -36,6 +38,7 @@ export async function POST(request: NextRequest) {
     } = body as {
       id: string;
       imageUrl: string;
+      sku: string;
       filename: string;
       title: string;
       tags: string[];
@@ -68,6 +71,7 @@ export async function POST(request: NextRequest) {
       {
         id,
         content: {
+          "Image URL": imageUrl || "",
           Title: title || "",
           Tags: Array.isArray(tags) ? tags.join("; ") : tags || "",
           "Short Description": shortDescription || "",
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
           Dimensions: dimensions || "",
         },
         metadata: {
-          imageUrl,
+          sku: sku || "",
           filename,
           indexedAt: new Date().toISOString(),
         },

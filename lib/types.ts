@@ -43,7 +43,8 @@ export type ToneOption =
   | "casual"
   | "creative"
   | "technical"
-  | "marketing";
+  | "marketing"
+  | "custom";
 
 export type ExportFormat = "json" | "csv";
 
@@ -52,11 +53,15 @@ export type ProviderType = "gateway" | "ollama" | "custom";
 export interface ProviderConfig {
   type: ProviderType;
   model: string;
+  customModel?: string;
+  provider?: string;
   apiKey?: string;
   baseUrl?: string;
   systemMessage: string;
   tone: ToneOption;
+  customTone?: string;
   enabledOutputs: OutputField[];
+  outputDescriptions?: Partial<Record<OutputField, string>>;
 }
 
 export const DEFAULT_PROVIDER_CONFIG: ProviderConfig = {
@@ -86,6 +91,7 @@ export const TONE_DESCRIPTIONS: Record<ToneOption, string> = {
   creative: "Imaginative and expressive",
   technical: "Detailed and precise",
   marketing: "Persuasive and engaging",
+  custom: "Define your own tone",
 };
 
 export const OUTPUT_FIELD_LABELS: Record<OutputField, string> = {
@@ -101,9 +107,24 @@ export const OUTPUT_FIELD_LABELS: Record<OutputField, string> = {
   dimensions: "Dimensions",
 };
 
+export const OUTPUT_FIELD_DESCRIPTIONS: Record<OutputField, string> = {
+  title: "A concise, descriptive title for the image",
+  tags: "Relevant tags/keywords for the image, 5-10 items",
+  shortDescription: "A brief 1-2 sentence description of the image",
+  longDescription: "A detailed 3-5 sentence description of the image",
+  generatedPrompt:
+    "A reverse-engineered AI image generation prompt that could recreate this image",
+  colors: "Dominant colors in the image as descriptive names",
+  mood: "The overall mood or atmosphere of the image",
+  style: "The artistic style or genre of the image",
+  subject: "The main subject or focus of the image",
+  dimensions: "Description of image composition and framing",
+};
+
 export const GATEWAY_MODELS = [
   { value: "openai/gpt-4o", label: "GPT-4o" },
   { value: "openai/gpt-4o-mini", label: "GPT-4o Mini" },
   { value: "anthropic/claude-sonnet-4", label: "Claude Sonnet 4" },
   { value: "google/gemini-2.5-flash-preview-04-17", label: "Gemini 2.5 Flash" },
+  { value: "custom", label: "Custom" },
 ];

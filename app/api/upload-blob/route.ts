@@ -8,7 +8,17 @@ function slugify(text: string): string {
     .replace(/[\s_]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
+    .slice(0, 30);
+}
+
+function generateShortSku(): string {
+  // Generate a 6-character SKU starting with "TaT" + 3 random chars
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let suffix = "";
+  for (let i = 0; i < 3; i++) {
+    suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `TaT${suffix}`;
 }
 
 function getExtension(filename: string): string {
@@ -36,8 +46,8 @@ export async function POST(request: NextRequest) {
     const slug = title
       ? slugify(title)
       : slugify(file.name.replace(/\.[^/.]+$/, ""));
-    const timestamp = Date.now();
-    const pathname = `img-base/${slug}-${timestamp}${ext}`;
+    const sku = generateShortSku();
+    const pathname = `${slug}-${sku}${ext}`;
 
     const blob = await put(pathname, file, {
       access: "public",
@@ -47,6 +57,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       url: blob.url,
       pathname: blob.pathname,
+      sku,
     });
   } catch (error) {
     console.error("Blob upload error:", error);
