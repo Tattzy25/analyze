@@ -1,0 +1,93 @@
+[
+  {
+    "filename": "Realism.png",
+    "imageUrl": "https://9hlc4hav8jy2zxe9.public.blob.vercel-storage.com/portrait-of-weathered-man-with-TaTpg1.png",
+    "title": "Portrait of Weathered Man with Beard - Detailed Pencil Drawing",
+    "tags": [
+      "portrait",
+      "pencil drawing",
+      "graphite art",
+      "realistic drawing",
+      "male portrait",
+      "beard",
+      "aged man",
+      "hyperrealistic",
+      "fine art",
+      "portraiture"
+    ],
+    "shortDescription": "A highly detailed pencil portrait of an older man with a full beard, showing weathered facial features and an intense gaze.",
+    "longDescription": "This is a masterfully executed pencil portrait depicting an older gentleman with distinguished facial features. The subject has a full, well-groomed beard and weathered skin that tells a story of experience and character. His intense, penetrating gaze is captured with remarkable detail, showing deep-set eyes beneath furrowed brows. The artist has skillfully rendered every texture, from the individual strands of hair to the subtle lines and creases that map the contours of his face. The shading technique demonstrates exceptional technical proficiency, creating a three-dimensional quality that brings the portrait to life.",
+    "generatedPrompt": "Hyperrealistic pencil portrait drawing of an older distinguished man with a full beard, weathered facial features, intense eyes, detailed shading and textures, graphite on paper, professional portrait style, fine art quality",
+    "colors": ["charcoal gray", "graphite black", "paper white", "medium gray"],
+    "mood": "Contemplative and dignified",
+    "style": "Photorealistic pencil drawing",
+    "subject": "Portrait of an older bearded man",
+    "dimensions": "Close-up portrait composition with the subject positioned slightly off-center, showing head and partial shoulders in three-quarter view"
+  },
+  {
+    "filename": "26caa402de1c43bbadef8b4c32dce408.png",
+    "imageUrl": "https://9hlc4hav8jy2zxe9.public.blob.vercel-storage.com/futuristic-astronaut-on-hoverb-TaTpwq.png",
+    "title": "Futuristic Astronaut on Hoverboard in Cyberpunk City",
+    "tags": [
+      "cyberpunk",
+      "astronaut",
+      "hoverboard",
+      "futuristic",
+      "neon lights",
+      "city street",
+      "sci-fi",
+      "urban",
+      "technology",
+      "night scene"
+    ],
+    "shortDescription": "A figure in a space suit rides a glowing hoverboard through a rain-soaked cyberpunk city street illuminated by vibrant neon signs.",
+    "longDescription": "This striking cyberpunk scene depicts a person wearing a sleek space helmet and dark jacket standing on a luminescent hoverboard in the middle of a wet city street. The urban environment is bathed in atmospheric blue and purple lighting, with towering buildings on either side adorned with bright neon signs in various colors including pink, yellow, and cyan. The wet pavement creates beautiful reflections of the neon lights and the hoverboard's blue glow. Silhouettes of other pedestrians can be seen in the misty distance, adding to the mysterious and futuristic atmosphere of this sci-fi cityscape.",
+    "generatedPrompt": "A cyberpunk scene of an astronaut in a reflective helmet and dark jacket standing on a glowing blue hoverboard in the middle of a rain-soaked city street at night, surrounded by tall buildings with bright neon signs in pink, purple, yellow and cyan colors, wet reflective pavement, atmospheric blue lighting, silhouettes of people in the distance, futuristic urban environment, cinematic lighting, highly detailed digital art",
+    "colors": [
+      "electric blue",
+      "neon pink",
+      "deep purple",
+      "cyan",
+      "yellow",
+      "black",
+      "silver"
+    ],
+    "mood": "Mysterious, futuristic, atmospheric, and contemplative",
+    "style": "Cyberpunk digital art with cinematic lighting and photorealistic rendering",
+    "subject": "An astronaut-like figure on a hoverboard in a cyberpunk cityscape",
+    "dimensions": "Centered composition with strong perspective leading down the street, vertical framing emphasizing the towering buildings"
+  },
+  {
+    "filename": "out-0 (3).webp",
+    "imageUrl": "https://9hlc4hav8jy2zxe9.public.blob.vercel-storage.com/tattooed-man-performing-aerial-TaT024.webp",
+    "title": "Tattooed Man Performing Aerial Skateboard Stunt Above Cityscape",
+    "tags": [
+      "skateboarding",
+      "extreme sports",
+      "urban",
+      "aerial stunt",
+      "tattoos",
+      "cityscape",
+      "freestyle",
+      "athletic",
+      "adventure",
+      "futuristic"
+    ],
+    "shortDescription": "A heavily tattooed, bald man performs an impressive aerial skateboard trick high above a sprawling city skyline.",
+    "longDescription": "This dramatic action shot captures a skilled skateboarder mid-air, performing an advanced aerial maneuver against the backdrop of a vast metropolitan cityscape. The athlete is completely tattooed with intricate designs covering his torso and arms, wearing dark athletic clothing and protective gear. He maintains perfect control over his skateboard while suspended high above the urban environment below, which features towering skyscrapers, city lights, and atmospheric haze. The composition emphasizes the extreme height and daring nature of the stunt, creating a powerful sense of movement and urban adventure.",
+    "generatedPrompt": "Hyperrealistic photograph of a heavily tattooed bald man performing an extreme aerial skateboard trick high above a modern city skyline, dramatic perspective from below, urban landscape with skyscrapers and city lights, cinematic lighting with atmospheric haze, professional sports photography, dynamic action shot",
+    "colors": [
+      "teal",
+      "blue-gray",
+      "orange",
+      "amber",
+      "charcoal",
+      "cream",
+      "golden"
+    ],
+    "mood": "Thrilling and adrenaline-fueled",
+    "style": "Cinematic action photography",
+    "subject": "Tattooed skateboarder performing aerial stunt",
+    "dimensions": "Vertical composition with low-angle perspective, emphasizing height and scale contrast between subject and cityscape"
+  }
+]

@@ -349,6 +349,91 @@ See `lib/types.ts` for complete type definitions:
 - `OutputField` - Available metadata fields
 - `ToneOption` - Output tone options
 
+## Unique Identifier Strategy
+
+**The SKU (`TaTxxx`) is THE unique identifier across ALL systems:**
+
+| System             | Identifier            | Example                                                                            |
+| ------------------ | --------------------- | ---------------------------------------------------------------------------------- |
+| **Vercel Blob**    | Filename contains SKU | `https://...blob.vercel-storage.com/portrait-of-weathered-man-with-**TaTpg1**.png` |
+| **Neon DB**        | `sku` column          | `TaTpg1`                                                                           |
+| **Upstash Search** | `id` field            | `TaTpg1`                                                                           |
+| **Shopify**        | `variant_sku` field   | `TaTpg1`                                                                           |
+
+**One product = One SKU = Searchable everywhere:**
+
+```
+                    ┌──────────────┐
+                    │   TaTpg1     │
+                    │   (SKU)      │
+                    └──────┬───────┘
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
+    ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+    │ Vercel Blob │ │  Neon DB    │ │   Shopify   │
+    │ ...TaTpg1.png│ │ sku: TaTpg1 │ │sku: TaTpg1 │
+    └─────────────┘ └─────────────┘ └─────────────┘
+```
+
+**When searching for `TaTpg1`:**
+
+- In Blob: Find the image
+- In Neon: Find the product record
+- In Upstash: Find the search index
+- In Shopify: Find the product
+
+## Database Schema
+
+See `lib/schema.ts` for the Drizzle ORM schema. Tables include:
+
+- `products` - Main product data with Shopify-compatible fields
+- `tags` - Unique tag names
+- `product_tags` - Many-to-many relationship (products ↔ tags)
+- `colors` - Unique color names
+- `product_colors` - Many-to-many relationship (products ↔ colors)
+
+## Development Workflow
+
+**1. Development (Running the app)**
+
+```bash
+pnpm dev        # Start development server
+pnpm build      # Build for production
+pnpm start      # Start production server
+```
+
+**2. Code Quality (Checks & Fixes)**
+
+```bash
+pnpm format       # Format code with Prettier
+pnpm format:check # Check if code is formatted
+pnpm type-check   # Check TypeScript types
+pnpm lint         # Check code quality with ESLint
+```
+
+**3. Database (Drizzle)**
+
+```bash
+pnpm db:generate  # Generate migration files
+pnpm db:migrate   # Run migrations
+pnpm db:push      # Push schema directly to DB
+pnpm db:studio    # Open visual DB viewer
+```
+
+**4. Git Hooks (Husky)**
+
+```bash
+pnpm prepare      # Setup Husky (runs on npm install)
+```
+
+**Typical workflow after making changes:**
+
+1. `pnpm format` - Format code
+2. `pnpm type-check` - Check types
+3. `pnpm lint` - Check code quality
+4. `pnpm build` - Build for production
+5. Git commit → Husky runs lint, type-check, format:check
+
 ## Compliance Checklist
 
 Before submitting changes, verify:

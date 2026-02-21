@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { imageAnalysisSchema } from "@/lib/schema";
+import { imageAnalysisSchema } from "@/lib/zod-schema";
 import type { OutputField, ToneOption } from "@/lib/types";
 import { OUTPUT_FIELD_DESCRIPTIONS } from "@/lib/types";
 
@@ -150,7 +150,7 @@ export async function POST(req: Request) {
     for (const field of allFields) {
       const isArray = field === "tags" || field === "colors";
       if (output && enabledOutputs.includes(field)) {
-        const val = output[field];
+        const val = (output as Record<string, unknown>)[field];
         filtered[field] = val ?? (isArray ? [] : "");
       } else {
         filtered[field] = isArray ? [] : "";
