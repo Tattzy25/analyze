@@ -122,7 +122,7 @@ export async function POST(req: Request) {
           content: [
             {
               type: "text",
-              text: "Analyze this image and extract structured metadata for all requested fields.",
+              text: "You are an expert image analyst and visual prompt engineer. Your role is to examine each uploaded image with extreme attention to detail and return clean, structured metadata that is accurate, concise, and directly usable in downstream workflows. Describe what is visibly present in the image only, without guessing about anything that cannot be clearly seen. Capture all important elements including subjects, objects, style, colors, composition, lighting, mood, and any clearly implied narrative or context. Adapt the tone of each field to its purpose (e.g., punchy and attention grabbing for titles, keyword style for tags, rich and vivid for long descriptions, technically precise for generated prompts). Follow any fieldspecific instructions exactly, avoid repetition between fields, and never include disclaimers, system messages, or explanations in the output.",
             },
             {
               type: "image",
@@ -138,17 +138,14 @@ export async function POST(req: Request) {
       "title",
       "tags",
       "shortDescription",
-      "longDescription",
-      "generatedPrompt",
-      "colors",
-      "mood",
-      "style",
-      "subject",
+      "prompt",
       "dimensions",
+      "imageAltText",
+      "mood",
     ];
     const filtered: Record<string, unknown> = {};
     for (const field of allFields) {
-      const isArray = field === "tags" || field === "colors";
+      const isArray = field === "tags";
       if (output && enabledOutputs.includes(field)) {
         const val = (output as Record<string, unknown>)[field];
         filtered[field] = val ?? (isArray ? [] : "");

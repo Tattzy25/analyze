@@ -26,7 +26,7 @@ export const products = pgTable(
     title: text("title").notNull(),
     shortDescription: text("short_description"),
     bodyHtml: text("body_html"), // HTML formatted for Shopify
-    generatedPrompt: text("generated_prompt"),
+    prompt: text("generated_prompt"),
 
     // AI-generated metadata
     mood: text("mood"),

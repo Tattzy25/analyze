@@ -100,7 +100,7 @@ export function SettingsPanel({ config, onChange }: SettingsPanelProps) {
               onValueChange={(v) =>
                 update({
                   type: v as ProviderType,
-                  model: v === "gateway" ? "openai/gpt-4o" : "",
+                  model: v === "gateway" ? "anthropic/claude-sonnet-4.6" : "",
                   baseUrl: "",
                 })
               }

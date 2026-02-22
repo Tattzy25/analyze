@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
-  themeColor: "#1a1a2e",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
 };
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "AI metadata",
     "image tagging",
     "vision AI",
-    "GPT-4o",
+    "anthropic/claude-sonnet-4.6",
     "image description",
     "automated tagging",
     "image metadata extraction",

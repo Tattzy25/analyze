@@ -268,7 +268,7 @@ Analyzes an image using AI and returns structured metadata.
     tags: string[]
     shortDescription: string
     longDescription: string
-    generatedPrompt: string
+    prompt: string
     colors: string[]
     mood: string
     style: string

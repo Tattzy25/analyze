@@ -38,21 +38,66 @@ export function exportToCSV(
   );
   if (completed.length === 0) return "";
 
-  const hasBlob = completed.some((img) => img.blobUrl);
+  // Shopify-compatible headers for export
   const headers = [
-    "Filename",
-    ...(hasBlob ? ["Image URL"] : []),
-    ...enabledOutputs.map((f) => fieldLabels[f]),
+    "Handle",
+    "Title",
+    "Body",
+    "Vendor",
+    "Product Category",
+    "Type",
+    "Tags",
+    "Published",
+    "Option1 Name",
+    "Option1 Value",
+    "Variant SKU",
+    "Variant Grams",
+    "Variant Inventory Tracker",
+    "Variant Price",
+    "Image Src",
+    "Image Position",
+    "SEO Title",
+    "SEO Description",
+    "Variant Weight Unit",
+    "Status",
   ];
+
   const rows = completed.map((img) => {
+    const result = img.result;
+    const title = result?.title || "";
+    const handle = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    // Tags - comma-separated
+    const tags = Array.isArray(result?.tags) ? result.tags.join(",") : "";
+
+    const imageSrc = img.blobUrl || "";
+
     const values = [
-      escapeCSV(img.file.name),
-      ...(hasBlob ? [escapeCSV(img.blobUrl || "")] : []),
-      ...enabledOutputs.map((field) => {
-        const val = img.result?.[field];
-        if (Array.isArray(val)) return escapeCSV(val.join("; "));
-        return escapeCSV(String(val ?? ""));
-      }),
+      escapeCSV(handle), // Handle - generated from title
+      escapeCSV(title), // Title - from AI result
+      escapeCSV(""), // Body - empty
+      escapeCSV("TaTTTy"), // Vendor - static default
+      escapeCSV(
+        "Arts & Entertainment > Hobbies & Creative Arts > Arts & Crafts > Art & Crafting Materials > Artwork",
+      ), // Product Category - static default
+      escapeCSV("Digital Tattoo Art"), // Type - static default
+      escapeCSV(tags), // Tags - comma-separated from AI result
+      escapeCSV("TRUE"), // Published - static default
+      escapeCSV("Title"), // Option1 Name - static default
+      escapeCSV("Default Title"), // Option1 Value - static default
+      escapeCSV(""), // Variant SKU - empty for digital
+      escapeCSV("0"), // Variant Grams - static default
+      escapeCSV(""), // Variant Inventory Tracker - empty for digital
+      escapeCSV("$5"), // Variant Price - static default
+      escapeCSV(imageSrc), // Image Src - from blob URL
+      escapeCSV("1"), // Image Position - static default
+      escapeCSV(""), // SEO Title - empty
+      escapeCSV(""), // SEO Description - empty
+      escapeCSV("0"), // Variant Weight Unit - static default
+      escapeCSV("active"), // Status - static default
     ];
     return values.join(",");
   });
