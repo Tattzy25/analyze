@@ -1,4 +1,5 @@
-import type { ImageFile, OutputField, OUTPUT_FIELD_LABELS } from "./types";
+import type { ImageFile, OutputField } from "./types";
+import { OUTPUT_FIELD_LABELS } from "./types";
 
 function escapeCSV(value: string): string {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {

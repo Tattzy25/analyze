@@ -129,36 +129,60 @@ export default function Page() {
           );
         }
 
-        // Step 3: Index to Upstash Search with image URL + metadata
+        // Step 3: Index to Upstash Search (PAUSED)
         let searchIndexId: string | undefined;
+        // if (blobUrl && data.result) {
+        //   try {
+        //     const indexResponse = await fetch("/api/index-search", {
+        //       method: "POST",
+        //       headers: { "Content-Type": "application/json" },
+        //       body: JSON.stringify({
+        //         id: img.id,
+        //         imageUrl: blobUrl,
+        //         filename: img.file.name,
+        //         title: data.result.title || "",
+        //         tags: data.result.tags || [],
+        //         shortDescription: data.result.shortDescription || "",
+        //         colors: data.result.colors || [],
+        //         mood: data.result.mood || "",
+        //         style: data.result.style || "",
+        //         subject: data.result.subject || "",
+        //         dimensions: data.result.dimensions || "",
+        //       }),
+        //     });
+        //     if (indexResponse.ok) {
+        //       const indexData = await indexResponse.json();
+        //       searchIndexId = indexData.id;
+        //     }
+        //   } catch {
+        //     console.warn("Search indexing error");
+        //   }
+        // }
+
+        // Step 4: Send webhook to Zapier with all generated data
         if (blobUrl && data.result) {
           try {
-            const indexResponse = await fetch("/api/index-search", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                id: img.id,
-                imageUrl: blobUrl,
-                filename: img.file.name,
-                title: data.result.title || "",
-                tags: data.result.tags || [],
-                shortDescription: data.result.shortDescription || "",
-                colors: data.result.colors || [],
-                mood: data.result.mood || "",
-                style: data.result.style || "",
-                subject: data.result.subject || "",
-                dimensions: data.result.dimensions || "",
-              }),
-            });
-
-            if (indexResponse.ok) {
-              const indexData = await indexResponse.json();
-              searchIndexId = indexData.id;
-            } else {
-              console.warn(`Search indexing failed for ${img.file.name}`);
-            }
+            await fetch(
+              "https://hooks.zapier.com/hooks/catch/23789456/uclixqp/",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  id: img.id,
+                  filename: img.file.name,
+                  imageUrl: blobUrl,
+                  title: data.result.title || "",
+                  tags: data.result.tags || [],
+                  shortDescription: data.result.shortDescription || "",
+                  prompt: data.result.prompt || "",
+                  dimensions: data.result.dimensions || "",
+                  imageAltText: data.result.imageAltText || "",
+                  mood: data.result.mood || "",
+                }),
+              },
+            );
           } catch {
-            console.warn(`Search indexing error for ${img.file.name}`);
+            console.warn("Webhook delivery failed");
           }
         }
 

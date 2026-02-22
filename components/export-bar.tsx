@@ -2,9 +2,11 @@
 
 import { Download, FileJson, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ImageFile, OutputField } from "@/lib/types";
-import { OUTPUT_FIELD_LABELS } from "@/lib/types";
+import type { ImageFile } from "@/lib/types";
 import { exportToJSON, exportToCSV, downloadFile } from "@/lib/export";
+
+import type { OutputField } from "@/lib/types";
+import { OUTPUT_FIELD_LABELS } from "@/lib/types";
 
 interface ExportBarProps {
   images: ImageFile[];
