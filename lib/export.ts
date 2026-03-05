@@ -71,8 +71,8 @@ export function exportToCSV(
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
-    // Tags - comma-separated
-    const tags = Array.isArray(result?.tags) ? result.tags.join(",") : "";
+    // Tags - comma-separated with space
+    const tags = Array.isArray(result?.tags) ? result.tags.join(", ") : "";
 
     const imageSrc = img.blobUrl || "";
 

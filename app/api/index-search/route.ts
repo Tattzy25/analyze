@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       token: searchToken,
     });
 
-    const index = client.index<SearchContent, SearchMetadata>("img-base");
+    const index = client.index<SearchContent, SearchMetadata>("drop-zone");
 
     await index.upsert([
       {
